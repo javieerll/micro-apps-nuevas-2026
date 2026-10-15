@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SignatureGen — Firmas de email profesionales</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #111827; color: #f3f4f6; padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { color: #a78bfa; text-align: center; }
+    .grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    input, textarea, select { width: 100%; padding: 10px; margin: 6px 0; border-radius: 6px; border: 1px solid #374151; background: #1f2937; color: white; }
+    button { background: #a78bfa; color: black; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin: 8px 0; }
+    #preview { background: white; color: #111; padding: 30px; border-radius: 12px; min-height: 200px; }
+    .premium-badge { background: #fbbf24; color: black; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SignatureGen <span class="premium-badge">PRO</span></h1>
+    <p style="text-align:center">Crea firmas de email bonitas en segundos</p>
+
+    <div class="grid">
+      <div>
+        <input id="name" placeholder="Nombre completo" value="Ana García">
+        <input id="title" placeholder="Cargo" value="Diseñadora UX">
+        <input id="company" placeholder="Empresa" value="Studio Creativo">
+        <input id="phone" placeholder="Teléfono" value="+34 600 000 000">
+        <input id="email" placeholder="Email" value="ana@studio.com">
+        <input id="website" placeholder="Web" value="studio.com">
+        <textarea id="extra" placeholder="Extra (LinkedIn, slogan...)" rows="3">LinkedIn: /in/anagarcia</textarea>
+
+        <select id="style">
+          <option value="minimal">Minimal</option>
+          <option value="bold">Bold</option>
+          <option value="color">Color</option>
+        </select>
+
+        <button onclick="generate()">Generar firma</button>
+        <button onclick="copyHTML()" style="background:#34d399">Copiar HTML</button>
+        <button onclick="unlock()" style="background:#fbbf24; color:black">Quitar marca de agua (Premium demo)</button>
+      </div>
+
+      <div>
+        <h3>Vista previa</h3>
+        <div id="preview"></div>
+        <textarea id="htmlcode" style="margin-top:15px; height:120px; font-family:monospace; font-size:12px;" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let premium = localStorage.getItem('sig_premium') === 'true';
+
+    function generate() {
+      const name = document.getElementById('name').value;
+      const title = document.getElementById('title').value;
+      const company = document.getElementById('company').value;
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('email').value;
+      const website = document.getElementById('website').value;
+      const extra = document.getElementById('extra').value;
+      const style = document.getElementById('style').value;
+
+      let html = `
+        <table cellpadding="0" cellspacing="0" style="font-family: Arial, sans-serif; font-size:14px; color:#333;">
+          <tr>
+            <td style="padding-right:15px; border-right:2px solid #a78bfa;">
+              <strong style="font-size:18px; color:#111;">${name}</strong><br>
+              <span style="color:#666;">${title}</span><br>
+              <strong>${company}</strong>
+            </td>
+            <td style="padding-left:15px;">
+              ${phone ? `📞 ${phone}<br>` : ''}
+              ${email ? `📧 <a href="mailto:${email}">${email}</a><br>` : ''}
+              ${website ? `🌐 <a href="https://${website}">${website}</a><br>` : ''}
+              ${extra ? extra.replace(/\n/g, '<br>') : ''}
+            </td>
+          </tr>
+        </table>
+      `;
+
+      if (!premium) {
+        html += `<p style="font-size:11px; color:#999; margin-top:10px;">Creado con SignatureGen • <a href="https://signaturegen.vercel.app">Crea la tuya</a></p>`;
+      }
+
+      document.getElementById('preview').innerHTML = html;
+      document.getElementById('htmlcode').value = html;
+    }
+
+    function copyHTML() {
+      const code = document.getElementById('htmlcode').value;
+      navigator.clipboard.writeText(code);
+      alert('HTML copiado. Pégalo en la configuración de firma de tu email.');
+    }
+
+    function unlock() {
+      localStorage.setItem('sig_premium', 'true');
+      premium = true;
+      generate();
+      alert('Marca de agua eliminada (modo demo).');
+    }
+
+    generate();
+  </script>
+</body>
+</html>
